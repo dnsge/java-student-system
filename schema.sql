@@ -29,11 +29,11 @@ CREATE TABLE IF NOT EXISTS teachers
 -- Course taught by one teacher
 CREATE TABLE IF NOT EXISTS courses
 (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    name        VARCHAR(100) NOT NULL,
-    room        VARCHAR(10),
-    teacher_id  INT,
-    FOREIGN KEY (teacher_id) REFERENCES teachers (id)
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    name       VARCHAR(100) NOT NULL,
+    room       VARCHAR(10),
+    teacher_id INT,
+    FOREIGN KEY (teacher_id) REFERENCES teachers (id) ON DELETE CASCADE
 );
 
 -- Class period during the day
@@ -51,10 +51,10 @@ CREATE TABLE IF NOT EXISTS enrollments
     student_id INT NOT NULL,
     course_id  INT NOT NULL,
     period_id  INT NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES students (id),
-    FOREIGN KEY (course_id) REFERENCES courses (id),
-    FOREIGN KEY (period_id) REFERENCES periods (id),
-    UNIQUE(student_id, period_id)
+    FOREIGN KEY (student_id) REFERENCES students (id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE,
+    FOREIGN KEY (period_id) REFERENCES periods (id) ON DELETE CASCADE,
+    UNIQUE (student_id, period_id)
 );
 
 -- Assignment details
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS assignments
     total_points INT,
     due_date     DATE,
     course_id    INT NOT NULL,
-    FOREIGN KEY (course_id) REFERENCES courses (id)
+    FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE
 );
 
 -- Grade given to a student for a specific assignment
