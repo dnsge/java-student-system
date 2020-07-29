@@ -358,6 +358,20 @@ public class QueryManager {
         ps.execute();
     }
 
+    public void createCourse(String name, String room, int teacherId) throws SQLException {
+        PreparedStatement ps = this.connection.prepareStatement("INSERT INTO courses(name, room, teacher_id) VALUES (?, ?, ?)");
+        ps.setString(1, name);
+        ps.setString(2, room);
+        ps.setInt(3, teacherId);
+        ps.execute();
+    }
+
+    public void deleteCourse(int courseId) throws SQLException {
+        PreparedStatement ps = this.connection.prepareStatement("DELETE FROM courses c WHERE c.id = ?");
+        ps.setInt(1, courseId);
+        ps.execute();
+    }
+
     @FunctionalInterface
     private interface ResultConsumer<R> {
         R apply(ResultSet t) throws SQLException;

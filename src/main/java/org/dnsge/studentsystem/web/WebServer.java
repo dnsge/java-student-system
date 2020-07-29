@@ -5,6 +5,7 @@ import org.dnsge.studentsystem.Util;
 import org.dnsge.studentsystem.sql.QueryManager;
 import org.dnsge.studentsystem.sql.model.*;
 import org.dnsge.studentsystem.web.controllers.AssignmentController;
+import org.dnsge.studentsystem.web.controllers.CourseController;
 import org.dnsge.studentsystem.web.controllers.EnrollmentController;
 import org.dnsge.studentsystem.web.controllers.GradeController;
 import spark.ModelAndView;
@@ -267,6 +268,10 @@ public class WebServer {
             Spark.path("/enrollments", () -> {
                 Spark.post("/", EnrollmentController::createEnrollment);
                 Spark.delete("/:enrollmentId", EnrollmentController::deleteEnrollment);
+            });
+            Spark.path("/courses", () -> {
+                Spark.post("/", CourseController::createCourse);
+                Spark.delete("/:courseId", CourseController::deleteCourse);
             });
         });
     }

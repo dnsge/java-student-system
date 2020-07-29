@@ -32,6 +32,48 @@
         vertical-align: middle;
     }
 </style>
+<script>
+    function deleteCourse(button) {
+        if (!confirm("Are you sure you want to delete this course?"))
+            return;
+
+        let tr = button.closest("tr");
+        let courseId = tr.dataset.id;
+
+        event.preventDefault();
+        $.ajax("/api/courses/" + courseId, {
+            method: "DELETE",
+            success: function (data) {
+                location.reload();
+            },
+            error: function (data) {
+                alert("Error: Failed to delete course");
+                console.error(data);
+            }
+        });
+    }
+
+    function createCourse() {
+        event.preventDefault();
+        let name = $("#nameInput").val();
+        let room = $("#roomInput").val();
+        $.ajax("/api/courses/", {
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                'name': name,
+                'room': room,
+            }),
+            success: function (data) {
+                location.reload();
+            },
+            error: function (data) {
+                alert("Error: Failed to create course: " + data.responseText);
+                console.error(data);
+            }
+        });
+    }
+</script>
 <body>
 #header()
 <div id="container">
@@ -47,17 +89,29 @@
         </thead>
         <tbody>
             #foreach($course in $courses)
-            <tr>
+            <tr data-id="$course.getId()">
                 <th scope="row">$course.getName()</th>
-                <td>Room $course.getRoom()</td>
+                <td>$course.getRoom()</td>
                 <td>
                     <div class="d-flex flex-column">
                         <a href="/courses/$course.getId()/assignments">Assignments</a>
                         <a href="/courses/$course.getId()/students">Students</a>
+                        <a href="#" onclick="deleteCourse(this)" title="Delete">Delete</a>
                     </div>
                 </td>
             </tr>
             #end
+        <tr>
+            <td>
+                <input type="text" id="nameInput" placeholder="Course name">
+            </td>
+            <td>
+                <input type="text" id="roomInput" placeholder="Course room">
+            </td>
+            <td>
+                <button class="btn btn-success" onclick="createCourse()">Create</button>
+            </td>
+        </tr>
         </tbody>
     </table>
 </div>
