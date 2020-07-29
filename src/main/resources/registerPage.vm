@@ -71,7 +71,8 @@
     <input type="text" id="typeField" class="form-control mb-3 input-bottom" placeholder="Student/Teacher"
            name="type"
            required autofocus>
-    <button class="btn btn-primary btn-block" type="submit">Register</button>
+    <button class="btn btn-primary btn-block mb-3" type="submit">Register</button>
+    <a href="/login">Sign in</a>
 </form>
 </body>
 #end

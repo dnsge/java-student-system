@@ -63,7 +63,8 @@
            name="password"
            autocomplete="off"
            required autofocus>
-    <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+    <button class="btn btn-primary btn-block mb-3" type="submit">Sign in</button>
+    <a href="/register">Register</a>
 </form>
 </body>
 #end
