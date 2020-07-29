@@ -7,6 +7,18 @@ import java.security.Key;
 
 public class Environment {
 
+    public static String mySqlUri() {
+        return System.getenv("MYSQL_URI");
+    }
+
+    public static String mySqlUser() {
+        return System.getenv("MYSQL_USER");
+    }
+
+    public static String mySqlPassword() {
+        return System.getenv("MYSQL_PASSWORD");
+    }
+
     public static Key signingKey() {
         String source = System.getenv("SIGNING_KEY");
         return Keys.hmacShaKeyFor(source.getBytes(StandardCharsets.UTF_8));

@@ -9,6 +9,7 @@ import org.dnsge.studentsystem.web.controllers.CourseController;
 import org.dnsge.studentsystem.web.controllers.EnrollmentController;
 import org.dnsge.studentsystem.web.controllers.GradeController;
 import spark.ModelAndView;
+import spark.Request;
 import spark.Spark;
 import spark.template.velocity.VelocityTemplateEngine;
 
@@ -19,6 +20,8 @@ import java.util.Optional;
 
 
 public class WebServer {
+
+    private static final String errorMessage = "An unknown error occurred. Try again later";
 
     private final int port;
 
@@ -97,7 +100,8 @@ public class WebServer {
                 Optional<Collection<Enrollment>> enrollments = qm.getStudentEnrollments(u.getId());
 
                 if (enrollments.isEmpty()) {
-                    return "Nothing here!";
+                    res.status(500);
+                    return errorMessage;
                 }
 
                 Map<String, Object> model = new HashMap<>();
@@ -107,7 +111,8 @@ public class WebServer {
                 Optional<Collection<Course>> courses = qm.getTeacherCourses(u.getId());
 
                 if (courses.isEmpty()) {
-                    return "Nothing here!";
+                    res.status(500);
+                    return errorMessage;
                 }
 
                 Map<String, Object> model = new HashMap<>();
@@ -122,12 +127,9 @@ public class WebServer {
             Spark.get("/assignments", (req, res) -> {
                 res.header("Vary", "Cookie");
 
-                int courseId;
-                try {
-                    courseId = Integer.parseInt(req.params(":courseId"));
-                } catch (NumberFormatException e) {
+                Optional<Integer> courseId = parseParamInt(req, ":courseId");
+                if (courseId.isEmpty())
                     return "Invalid course id";
-                }
 
                 Optional<User> authUser = AuthenticationManager.getAuthenticatedUser(req);
                 if (authUser.isEmpty()) {
@@ -138,26 +140,29 @@ public class WebServer {
                 User u = authUser.get();
                 QueryManager qm = QueryManager.getQueryManager();
 
-                Optional<Course> course = qm.getCourse(courseId);
-                if (course.isEmpty())
-                    return "Nothing here!";
-
+                Optional<Course> course = qm.getCourse(courseId.get());
+                if (course.isEmpty()) {
+                    res.status(500);
+                    return errorMessage;
+                }
                 Map<String, Object> model = new HashMap<>();
                 model.put("course", course.get());
                 model.put("esc", new EscapeTool());
                 if (u.getType() == 's') {
-                    Optional<Collection<Assignment>> assignments = qm.getStudentAssignmentGrades(u.getId(), courseId);
-                    if (assignments.isEmpty())
-                        return "Nothing here!";
-
+                    Optional<Collection<Assignment>> assignments = qm.getStudentAssignmentGrades(u.getId(), courseId.get());
+                    if (assignments.isEmpty()) {
+                        res.status(500);
+                        return errorMessage;
+                    }
                     model.put("grade", Assignment.calculateAverageGrade(assignments.get()));
                     model.put("assignments", assignments.get().toArray());
                     return renderTemplate(model, "student_assignments.vm");
                 } else if (u.getType() == 't') {
-                    Optional<Collection<Assignment>> assignments = qm.getCourseAssignments(courseId);
-                    if (assignments.isEmpty())
-                        return "Nothing here!";
-
+                    Optional<Collection<Assignment>> assignments = qm.getCourseAssignments(courseId.get());
+                    if (assignments.isEmpty()) {
+                        res.status(500);
+                        return errorMessage;
+                    }
                     model.put("assignments", assignments.get().toArray());
                     return renderTemplate(model, "teacher_assignments.vm");
                 } else {
@@ -167,12 +172,9 @@ public class WebServer {
             Spark.get("/students", (req, res) -> {
                 res.header("Vary", "Cookie");
 
-                int courseId;
-                try {
-                    courseId = Integer.parseInt(req.params(":courseId"));
-                } catch (NumberFormatException e) {
+                Optional<Integer> courseId = parseParamInt(req, ":courseId");
+                if (courseId.isEmpty())
                     return "Invalid course id";
-                }
 
                 Optional<User> authUser = AuthenticationManager.getAuthenticatedUser(req);
                 if (authUser.isEmpty()) {
@@ -183,24 +185,29 @@ public class WebServer {
                 User u = authUser.get();
                 QueryManager qm = QueryManager.getQueryManager();
 
-                Optional<Course> course = qm.getCourse(courseId);
-                if (course.isEmpty())
-                    return "Nothing here!";
+                Optional<Course> course = qm.getCourse(courseId.get());
+                if (course.isEmpty()) {
+                    res.status(500);
+                    return errorMessage;
+                }
 
                 Map<String, Object> model = new HashMap<>();
                 model.put("course", course.get());
                 model.put("esc", new EscapeTool());
                 if (u.getType() == 's') {
-                    return "Not implemented";
+                    res.status(403);
+                    return errorMessage;
                 } else if (u.getType() == 't') {
-                    Optional<Collection<Enrollment>> enrollments = qm.getCourseEnrollments(courseId);
-                    if (enrollments.isEmpty())
-                        return "Nothing here!";
-
+                    Optional<Collection<Enrollment>> enrollments = qm.getCourseEnrollments(courseId.get());
+                    if (enrollments.isEmpty()) {
+                        res.status(500);
+                        return errorMessage;
+                    }
                     Optional<Collection<Period>> periods = qm.getPeriods();
-                    if (periods.isEmpty())
-                        return "Nothing here!";
-
+                    if (periods.isEmpty()) {
+                        res.status(500);
+                        return errorMessage;
+                    }
                     model.put("enrollments", enrollments.get().toArray());
                     model.put("periods", periods.get().toArray());
                     return renderTemplate(model, "teacher_students.vm");
@@ -213,12 +220,9 @@ public class WebServer {
         Spark.get("/assignments/:assignmentId/grades", (req, res) -> {
             res.header("Vary", "Cookie");
 
-            int assignmentId;
-            try {
-                assignmentId = Integer.parseInt(req.params(":assignmentId"));
-            } catch (NumberFormatException e) {
+            Optional<Integer> assignmentId = parseParamInt(req, ":assignmentId");
+            if (assignmentId.isEmpty())
                 return "Invalid assignment id";
-            }
 
             Optional<User> authUser = AuthenticationManager.getAuthenticatedUser(req);
             if (authUser.isEmpty()) {
@@ -229,11 +233,11 @@ public class WebServer {
             User u = authUser.get();
             QueryManager qm = QueryManager.getQueryManager();
 
-            Optional<Assignment> assignment = qm.getAssignment(assignmentId);
+            Optional<Assignment> assignment = qm.getAssignment(assignmentId.get());
             if (assignment.isEmpty())
                 return "Nothing here!";
 
-            Optional<Collection<Grade>> grades = qm.getTeacherAssignmentGrades(assignmentId);
+            Optional<Collection<Grade>> grades = qm.getTeacherAssignmentGrades(assignmentId.get());
             if (grades.isEmpty())
                 return "Nothing here!";
 
@@ -274,5 +278,14 @@ public class WebServer {
                 Spark.delete("/:courseId", CourseController::deleteCourse);
             });
         });
+    }
+
+    private static Optional<Integer> parseParamInt(Request req, String param) {
+        try {
+            int val = Integer.parseInt(req.params(param));
+            return Optional.of(val);
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 }
