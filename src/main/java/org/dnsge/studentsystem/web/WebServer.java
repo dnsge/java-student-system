@@ -44,6 +44,7 @@ public class WebServer {
     }
 
     private void setRoutes() {
+        Spark.redirect.get("/", "/home");
         Spark.get("/login", (req, res) -> {
             res.header("Vary", "Cookie");
 
