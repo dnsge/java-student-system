@@ -1,0 +1,179 @@
+#* @vtlvariable name="course" type="org.dnsge.studentsystem.sql.model.Course" *#
+#* @vtlvariable name="assignments" type="org.dnsge.studentsystem.sql.model.Assignment[]" *#
+
+#parse("mainLayout.vm")
+#@mainLayout()
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    #container {
+        height: calc(100% - 56px);
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        text-align: center;
+        background-color: rgb(240, 240, 240);
+    }
+
+    #content {
+        width: 100%;
+        max-width: 800px;
+        padding: 15px;
+        margin: auto;
+    }
+</style>
+<script>
+    function deleteAssignment(button) {
+        let tr = button.closest("tr");
+        let assignmentId = tr.dataset.id;
+
+        event.preventDefault();
+        $.ajax("/api/assignments/" + assignmentId, {
+            method: "DELETE",
+            success: function (data) {
+                location.reload();
+            },
+            error: function (data) {
+                alert("Error: Failed to delete assignment");
+                console.error(data);
+            }
+        });
+    }
+
+    function createAssignment() {
+        event.preventDefault();
+        let name = $("#nameInput").val();
+        let date = $("#dueDateInput").val();
+        let totalPoints = $("#totalPointsInput").val();
+        let courseId = $("#assignmentTable").data().courseid;
+        $.ajax("/api/assignments/", {
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                'name': name,
+                'dueDate': date,
+                'totalPoints': totalPoints,
+                'courseId': courseId
+            }),
+            success: function (data) {
+                location.reload();
+            },
+            error: function (data) {
+                alert("Error: Failed to create assignment");
+                console.error(data);
+            }
+        });
+    }
+
+    function newInput(type) {
+        let input = document.createElement("input");
+        input.type = type;
+        return input;
+    }
+
+    function wrapInTd(element) {
+        let td = document.createElement("td");
+        td.appendChild(element);
+        return td;
+    }
+
+    function updateAssignment(button) {
+        let tr = button.closest("tr");
+
+        let dateInput = newInput("date");
+        let nameInput = newInput("text");
+        let pointsInput = newInput("text");
+        pointsInput.pattern = "\\d*";
+
+        dateInput.value = tr.dataset.date;
+        nameInput.value = tr.dataset.name;
+        pointsInput.value = tr.dataset.points;
+        let assignmentId = tr.dataset.id;
+
+        let submitButton = document.createElement("button");
+        submitButton.classList.add("btn", "btn-success");
+        submitButton.textContent = "Update";
+        submitButton.onclick = function () {
+            $.ajax("/api/assignments/" + assignmentId, {
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    'name': nameInput.value,
+                    'dueDate': dateInput.value,
+                    'totalPoints': pointsInput.value
+                }),
+                success: function (data) {
+                    location.reload();
+                },
+                error: function (data) {
+                    alert("Error: Failed to update assignment. Please reload the page.");
+                    console.error(data);
+                }
+            });
+        };
+
+        while (tr.firstChild) {
+            tr.removeChild(tr.lastChild);
+        }
+
+        tr.appendChild(wrapInTd(dateInput));
+        tr.appendChild(wrapInTd(nameInput));
+        tr.appendChild(wrapInTd(pointsInput));
+        tr.appendChild(wrapInTd(submitButton));
+    }
+</script>
+<body>
+    #header()
+<div id="container">
+<div id="content">
+    <h2>"$course.getName()" - Assignments</h2>
+    <table class="table table-striped table-bordered" id="assignmentTable" data-courseid="$course.getId()">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Due Date</th>
+            <th scope="col">Name</th>
+            <th scope="col">Total Points</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            #foreach($assignment in $assignments)
+                #set( $date = $assignment.getDueDate() )
+                #set( $name = $assignment.getName() )
+                #set( $points = $assignment.getTotalPoints() )
+                #set( $id = $assignment.getId() )
+            <tr data-date="$date" data-name="$esc.html($name)" data-points="$points" data-id="$id">
+                <td>$date</td>
+                <td>$name</td>
+                <td>$points</td>
+                <td>
+                    <button class="btn btn-danger" onclick="deleteAssignment(this)" title="Delete">&times;</button>
+                    <button class="btn btn-warning" onclick="updateAssignment(this)" title="Edit">✎</button>
+                    <a href="/assignments/$assignment.getId()/grades" class="btn btn-success" title="Grade">＋</a>
+                </td>
+            </tr>
+            #end
+        <tr>
+            <td>
+                <input type="date" id="dueDateInput">
+            </td>
+            <td>
+                <input type="text" id="nameInput" placeholder="Assignment name">
+            </td>
+            <td>
+                <input type="text" pattern="\d*" id="totalPointsInput" placeholder="10">
+            </td>
+            <td>
+                <button class="btn btn-success" onclick="createAssignment()">Create</button>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+</div>
+</body>
+#end

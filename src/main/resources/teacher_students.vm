@@ -1,0 +1,116 @@
+#* @vtlvariable name="course" type="org.dnsge.studentsystem.sql.model.Course" *#
+#* @vtlvariable name="enrollments" type="org.dnsge.studentsystem.sql.model.Enrollment[]" *#
+#* @vtlvariable name="periods" type="org.dnsge.studentsystem.sql.model.Period[]" *#
+
+#parse("mainLayout.vm")
+#@mainLayout()
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    #container {
+        height: calc(100% - 56px);
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        text-align: center;
+        background-color: rgb(240, 240, 240);
+    }
+
+    #content {
+        width: 100%;
+        max-width: 800px;
+        padding: 15px;
+        margin: auto;
+    }
+</style>
+<script>
+    function removeStudent(button) {
+        let tr = button.closest("tr");
+        let enrollmentId = tr.dataset.id;
+
+        event.preventDefault();
+        $.ajax("/api/enrollments/" + enrollmentId, {
+            method: "DELETE",
+            success: function (data) {
+                location.reload();
+            },
+            error: function (data) {
+                alert("Error: Failed to remove student");
+                console.error(data);
+            }
+        });
+    }
+
+    function enrollStudent() {
+        event.preventDefault();
+        let periodId = $("#periodInput").val();
+        let name = $("#nameInput").val();
+        let courseId = $("#enrollmentTable").data().courseid;
+        $.ajax("/api/enrollments/", {
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                'periodId': periodId,
+                'username': name,
+                'courseId': courseId
+            }),
+            success: function (data) {
+                location.reload();
+            },
+            error: function (data) {
+                alert("Error: Failed to enroll student: " + data.responseText);
+                console.error(data);
+            }
+        });
+    }
+</script>
+<body>
+#header()
+<div id="container">
+<div id="content">
+    <h2>"$course.getName()" - Students</h2>
+    <table class="table table-striped table-bordered" id="enrollmentTable" data-courseid="$course.getId()">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Period</th>
+            <th scope="col">Student</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            #foreach($enrollment in $enrollments)
+                #set( $student = $enrollment.getStudent() )
+                #set( $period = $enrollment.getPeriod() )
+                #set( $id = $enrollment.getId() )
+            <tr data-id="$id">
+                <td>$period.getDisplay()</td>
+                <td>$student.getFirstName() $student.getLastName()</td>
+                <td>
+                    <button class="btn btn-danger" onclick="removeStudent(this)" title="Remove">&times;</button>
+                </td>
+            </tr>
+            #end
+        <tr>
+            <td>
+                <select id="periodInput">
+                    #foreach($period in $periods)
+                        <option value="$period.getId()">$period.getDisplay()</option>
+                    #end
+                </select>
+            </td>
+            <td>
+                <input type="text" id="nameInput" placeholder="Student username">
+            </td>
+            <td>
+                <button class="btn btn-success" onclick="enrollStudent()">Enroll</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+#end

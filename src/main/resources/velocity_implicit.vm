@@ -1,0 +1,2 @@
+#* @implicitly included *#
+#* @vtlvariable name="esc" type="org.apache.velocity.tools.generic.EscapeTool" *#

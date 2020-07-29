@@ -1,0 +1,66 @@
+#* @vtlvariable name="courses" type="org.dnsge.studentsystem.sql.model.Course[]" *#
+
+#parse("mainLayout.vm")
+#@mainLayout()
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    #container {
+        height: calc(100% - 56px);
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        text-align: center;
+        background-color: rgb(240, 240, 240);
+    }
+
+    #content {
+        width: 100%;
+        max-width: 800px;
+        padding: 15px;
+        margin: auto;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .table th {
+        vertical-align: middle;
+    }
+</style>
+<body>
+#header()
+<div id="container">
+<div id="content">
+    <h2>Your Courses</h2>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Course</th>
+            <th scope="col">Room</th>
+            <th scope="col">Manage</th>
+        </tr>
+        </thead>
+        <tbody>
+            #foreach($course in $courses)
+            <tr>
+                <th scope="row">$course.getName()</th>
+                <td>Room $course.getRoom()</td>
+                <td>
+                    <div class="d-flex flex-column">
+                        <a href="/courses/$course.getId()/assignments">Assignments</a>
+                        <a href="/courses/$course.getId()/students">Students</a>
+                    </div>
+                </td>
+            </tr>
+            #end
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+#end

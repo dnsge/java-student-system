@@ -1,0 +1,124 @@
+#* @vtlvariable name="average" type="java.lang.String" *#
+#* @vtlvariable name="assignment" type="org.dnsge.studentsystem.sql.model.Assignment" *#
+#* @vtlvariable name="grades" type="org.dnsge.studentsystem.sql.model.Grade[]" *#
+
+#parse("mainLayout.vm")
+#@mainLayout()
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    #container {
+        height: calc(100% - 56px);
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        text-align: center;
+        background-color: rgb(240, 240, 240);
+    }
+
+    #content {
+        width: 100%;
+        max-width: 800px;
+        padding: 15px;
+        margin: auto;
+    }
+</style>
+<script>
+    function deleteGrade(button) {
+        let tr = button.closest("tr");
+        let gradeId = tr.dataset.id;
+
+        event.preventDefault();
+        $.ajax("/api/grades/" + gradeId, {
+            method: "DELETE",
+            success: function (data) {
+                location.reload();
+            },
+            error: function (data) {
+                alert("Error: Failed to delete grade");
+                console.error(data);
+            }
+        });
+    }
+
+    function createGrade() {
+        event.preventDefault();
+        let name = $("#nameInput").val();
+        let points = $("#pointsInput").val();
+        let assignmentId = $("#assignmentTable").data().assignmentid;
+        $.ajax("/api/grades/", {
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                'username': name,
+                'points': points,
+                'assignmentId': assignmentId
+            }),
+            success: function (data) {
+                location.reload();
+            },
+            error: function (data) {
+                alert("Error: Failed to create grade: " + data.responseText);
+                console.error(data);
+            }
+        });
+    }
+</script>
+<body>
+#header()
+<div id="container">
+<div id="content">
+    <h2>"$assignment.getName()" - Grades</h2>
+    <table class="table table-striped table-bordered" id="assignmentTable" data-assignmentid="$assignment.getId()">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Graded At</th>
+            <th scope="col">Student</th>
+            <th scope="col">Grade</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            #foreach($grade in $grades)
+                #set( $gradedAt = $grade.gradedAtString() )
+                #set( $student = $grade.getStudent() )
+                #set( $points = $grade.getGradeText($assignment.getTotalPoints()) )
+                #set( $id = $grade.getId() )
+            <tr data-id="$id">
+                <td>$gradedAt</td>
+                <td>$student.getFirstName() $student.getLastName()</td>
+                <td>$points</td>
+                <td>
+                    <button class="btn btn-danger" onclick="deleteGrade(this)" title="Delete">&times;</button>
+                </td>
+            </tr>
+            #end
+        <tr>
+            <td></td>
+            <td>Average grade:</td>
+            <td>$average</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <input type="text" id="nameInput" placeholder="Student username">
+            </td>
+            <td>
+                <input type="text" pattern="\d*" id="pointsInput" placeholder="$assignment.getTotalPoints()">
+                /$assignment.getTotalPoints()
+            </td>
+            <td>
+                <button class="btn btn-success" onclick="createGrade()">Grade</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+#end

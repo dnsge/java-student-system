@@ -1,0 +1,60 @@
+#* @vtlvariable name="enrollments" type="org.dnsge.studentsystem.sql.model.Enrollment[]" *#
+
+#parse("mainLayout.vm")
+#@mainLayout()
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    #container {
+        height: calc(100% - 56px);
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        text-align: center;
+        background-color: rgb(240, 240, 240);
+    }
+
+    #content {
+        width: 100%;
+        max-width: 800px;
+        padding: 15px;
+        margin: auto;
+    }
+</style>
+<body>
+#header()
+<div id="container">
+<div id="content">
+    <h2>Your Courses</h2>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Period</th>
+            <th scope="col">Course</th>
+            <th scope="col">Room</th>
+            <th scope="col">Teacher</th>
+            <th scope="col">Grade</th>
+        </tr>
+        </thead>
+        <tbody>
+            #foreach($enrollment in $enrollments)
+                #set ($period = $enrollment.getPeriod())
+                #set ($course = $enrollment.getCourse())
+                #set ($teacher = $enrollment.getCourse().getTeacher())
+            <tr>
+                <th scope="row">$period.getDisplay()</th>
+                <td>$course.getName()</td>
+                <td>Room $course.getRoom()</td>
+                <td>$teacher.getFirstName() $teacher.getLastName()</td>
+                <td><a href="/courses/$course.getId()/assignments">View Grade</a></td>
+            </tr>
+            #end
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+#end
