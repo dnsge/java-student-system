@@ -13,11 +13,11 @@ public class Environment {
     }
 
     public static boolean usingHTTPS() {
-        return false;
+        return System.getenv().containsKey("USE_HTTPS");
     }
 
     public static boolean enforcePermissions() {
-        return false;
+        return System.getenv().containsKey("ENFORCE_PERMISSIONS");
     }
 
 }
