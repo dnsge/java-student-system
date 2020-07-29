@@ -62,6 +62,24 @@ public class WebServer {
             }
         });
 
+        Spark.get("/register", (req, res) -> {
+            res.header("Vary", "Cookie");
+
+            Optional<User> authUser = AuthenticationManager.getAuthenticatedUser(req);
+            if (authUser.isPresent()) {
+                res.redirect("/home", 302);
+                return "";
+            } else {
+                Map<String, Object> model = new HashMap<>();
+                String error = req.cookie("error");
+                if (error != null && !error.equals("")) {
+                    model.put("error", Util.urlDecodeString(error));
+                    res.removeCookie("/register", "error");
+                }
+                return renderTemplate(model, "registerPage.vm");
+            }
+        });
+
         Spark.get("/home", (req, res) -> {
             res.header("Vary", "Cookie");
 
@@ -234,6 +252,7 @@ public class WebServer {
         // web api
         Spark.path("/api", () -> {
             Spark.post("/login", AuthenticationManager::handleLogin);
+            Spark.post("/register", AuthenticationManager::handleRegister);
             Spark.get("/logout", AuthenticationManager::handleLogout);
             Spark.path("/assignments", () -> {
                 Spark.post("/", AssignmentController::createAssignment);

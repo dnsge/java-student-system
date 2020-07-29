@@ -1,0 +1,77 @@
+#* @vtlvariable name="error" type="java.lang.String" *#
+#parse("mainLayout.vm")
+#@mainLayout()
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    body {
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        text-align: center;
+        background-color: rgb(240, 240, 240);
+    }
+
+    #signInForm {
+        width: 100%;
+        max-width: 300px;
+        padding: 15px;
+        margin: auto;
+    }
+
+    #signInForm input {
+        position: relative;
+        box-sizing: border-box;
+        height: auto;
+        padding: 10px;
+    }
+
+    #signInForm input:focus {
+        z-index: 2 !important;
+    }
+
+    .input-top {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        margin-bottom: -1px !important;
+    }
+
+    .input-middle {
+        border-radius: 0;
+        margin-bottom: -1px !important;
+    }
+
+    .input-bottom {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+</style>
+<body>
+<form id="signInForm" action="/api/register" method="post">
+    <h1 class="h3">Student System</h1>
+    #if ($error)
+        <div class="alert alert-danger" role="alert">
+            $error
+        </div>
+    #end
+    <label for="usernameField" class="sr-only">Username</label>
+    <input type="text" id="usernameField" class="form-control mt-3 input-top" placeholder="Username" autocomplete="off"
+           name="username"
+           required autofocus>
+    <label for="passwordField" class="sr-only">Password</label>
+    <input type="password" id="passwordField" class="form-control mb-3 input-middle" placeholder="Password"
+           name="password"
+           autocomplete="off"
+           required autofocus>
+    <label for="typeField" class="sr-only">Type</label>
+    <input type="text" id="typeField" class="form-control mb-3 input-bottom" placeholder="Student/Teacher"
+           name="type"
+           required autofocus>
+    <button class="btn btn-primary btn-block" type="submit">Register</button>
+</form>
+</body>
+#end

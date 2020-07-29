@@ -13,6 +13,7 @@ import spark.Response;
 
 import java.security.Key;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
@@ -62,6 +63,46 @@ public class AuthenticationManager {
     public static String handleLogout(Request req, Response res) {
         res.removeCookie("/", authCookie);
         res.redirect("/login", 302);
+        return "";
+    }
+
+    public static String handleRegister(Request req, Response res) {
+        String username = req.queryParamOrDefault("username", "");
+        String password = req.queryParamOrDefault("password", "");
+        String type = req.queryParamOrDefault("type", "");
+
+        if (username.equals("") || password.equals("") || type.equals("")) {
+            res.cookie("/register", "error", Util.urlEncodeString("Enter a username, password, and account type"), 10, Environment.usingHTTPS());
+            res.redirect("/register", 302);
+            return "";
+        }
+
+        type = type.toLowerCase();
+        if (!type.equals("student") && !type.equals("teacher")) {
+            res.cookie("/register", "error", Util.urlEncodeString("Account type must be 'Student' or 'Teacher'"), 10, Environment.usingHTTPS());
+            res.redirect("/register", 302);
+            return "";
+        }
+
+        QueryManager qm = QueryManager.getQueryManager();
+        User u;
+        try {
+            u = qm.createUser(username, password, type.equals("student") ? 's' : 't');
+        } catch (SQLIntegrityConstraintViolationException e) {
+            res.cookie("/register", "error", Util.urlEncodeString("That username is already taken"), 10, Environment.usingHTTPS());
+            res.redirect("/register", 302);
+            return "";
+        } catch (SQLException e) {
+            res.cookie("/register", "error", Util.urlEncodeString("An unknown error occurred. Try again later"), 10, Environment.usingHTTPS());
+            res.redirect("/register", 302);
+            System.err.println(e.toString());
+            return "";
+        }
+
+        String jwt = issueJWT(u);
+        res.removeCookie("/register", "error");
+        res.cookie("/", authCookie, jwt, (int) tokenLife.toSeconds(), Environment.usingHTTPS(), true);
+        res.redirect("/home", 302);
         return "";
     }
 
