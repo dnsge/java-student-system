@@ -31,7 +31,6 @@ CREATE TABLE IF NOT EXISTS courses
 (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(100) NOT NULL,
-    description TEXT,
     room        VARCHAR(10),
     teacher_id  INT,
     FOREIGN KEY (teacher_id) REFERENCES teachers (id)
