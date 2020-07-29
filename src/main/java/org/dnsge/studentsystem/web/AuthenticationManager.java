@@ -70,9 +70,11 @@ public class AuthenticationManager {
         String username = req.queryParamOrDefault("username", "");
         String password = req.queryParamOrDefault("password", "");
         String type = req.queryParamOrDefault("type", "");
+        String firstName = req.queryParamOrDefault("firstName", "");
+        String lastName = req.queryParamOrDefault("lastName", "");
 
-        if (username.equals("") || password.equals("") || type.equals("")) {
-            res.cookie("/register", "error", Util.urlEncodeString("Enter a username, password, and account type"), 10, Environment.usingHTTPS());
+        if (username.equals("") || password.equals("") || firstName.equals("") || lastName.equals("") ||type.equals("")) {
+            res.cookie("/register", "error", Util.urlEncodeString("Enter a username, password, name, and account type"), 10, Environment.usingHTTPS());
             res.redirect("/register", 302);
             return "";
         }
@@ -88,9 +90,15 @@ public class AuthenticationManager {
         User u;
         try {
             u = qm.createUser(username, password, type.equals("student") ? 's' : 't');
+            if (type.equals("student")) {
+                qm.createStudent(u.getId(), firstName, lastName);
+            } else {
+                qm.createTeacher(u.getId(), firstName, lastName);
+            }
         } catch (SQLIntegrityConstraintViolationException e) {
             res.cookie("/register", "error", Util.urlEncodeString("That username is already taken"), 10, Environment.usingHTTPS());
             res.redirect("/register", 302);
+            System.err.println(e.toString());
             return "";
         } catch (SQLException e) {
             res.cookie("/register", "error", Util.urlEncodeString("An unknown error occurred. Try again later"), 10, Environment.usingHTTPS());

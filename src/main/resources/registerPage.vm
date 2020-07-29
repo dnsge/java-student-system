@@ -67,6 +67,14 @@
            name="password"
            autocomplete="off"
            required autofocus>
+    <label for="firstNameField" class="sr-only">First name</label>
+    <input type="text" id="firstNameField" class="form-control mb-3 input-middle" placeholder="First name"
+           name="firstName"
+           required autofocus>
+    <label for="lastNameField" class="sr-only">First name</label>
+    <input type="text" id="lastNameField" class="form-control mb-3 input-middle" placeholder="Last name"
+           name="lastName"
+           required autofocus>
     <label for="typeField" class="sr-only">Type</label>
     <input type="text" id="typeField" class="form-control mb-3 input-bottom" placeholder="Student/Teacher"
            name="type"

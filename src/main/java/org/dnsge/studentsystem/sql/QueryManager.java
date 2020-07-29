@@ -162,6 +162,22 @@ public class QueryManager {
         }
     }
 
+    public void createStudent(int studentId, String firstName, String lastName) throws SQLException {
+        PreparedStatement ps = this.connection.prepareStatement("INSERT INTO students(id, first_name, last_name) VALUES(?, ?, ?)");
+        ps.setInt(1, studentId);
+        ps.setString(2, firstName);
+        ps.setString(3, lastName);
+        ps.execute();
+    }
+
+    public void createTeacher(int teacherId, String firstName, String lastName) throws SQLException {
+        PreparedStatement ps = this.connection.prepareStatement("INSERT INTO teachers(id, first_name, last_name) VALUES(?, ?, ?)");
+        ps.setInt(1, teacherId);
+        ps.setString(2, firstName);
+        ps.setString(3, lastName);
+        ps.execute();
+    }
+
     public Optional<User> loginUser(String username, String password) throws SQLException {
         PreparedStatement ps = this.connection.prepareStatement(loginUserStatement);
         ps.setString(1, username);
