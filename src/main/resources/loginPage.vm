@@ -23,9 +23,14 @@
     }
 
     #signInForm input {
+        position: relative;
         box-sizing: border-box;
         height: auto;
         padding: 10px;
+    }
+
+    #signInForm input:focus {
+        z-index: 2 !important;
     }
 
     .input-top {
