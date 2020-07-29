@@ -13,8 +13,22 @@
         <java.main.class>org.dnsge.studentsystem.Main</java.main.class>
     </properties>
 
+    <packaging>jar</packaging>
     <build>
+        <finalName>StudentSystem</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.dnsge.studentsystem.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -57,7 +71,7 @@
                                     <mainClass>${java.main.class}</mainClass>
                                 </manifest>
                             </archive>
-                            <finalName>student-system</finalName>
+                            <finalName>StudentSystem</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
