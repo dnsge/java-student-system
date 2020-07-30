@@ -17,9 +17,12 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AuthenticationManager {
 
+    private static final Pattern usernamePattern = Pattern.compile("^(\\w){4,32}$");
     private static final String issuer = "student_system";
     private static final Duration tokenLife = Duration.ofHours(6);
     private static final String authCookie = "ss_auth";
@@ -67,14 +70,20 @@ public class AuthenticationManager {
     }
 
     public static String handleRegister(Request req, Response res) {
-        String username = req.queryParamOrDefault("username", "");
+        String username = req.queryParamOrDefault("username", "").trim();
         String password = req.queryParamOrDefault("password", "");
-        String type = req.queryParamOrDefault("type", "");
-        String firstName = req.queryParamOrDefault("firstName", "");
-        String lastName = req.queryParamOrDefault("lastName", "");
+        String type = req.queryParamOrDefault("type", "").trim();
+        String firstName = req.queryParamOrDefault("firstName", "").trim();
+        String lastName = req.queryParamOrDefault("lastName", "").trim();
 
-        if (username.equals("") || password.equals("") || firstName.equals("") || lastName.equals("") ||type.equals("")) {
+        if (username.equals("") || password.equals("") || firstName.equals("") || lastName.equals("") || type.equals("")) {
             res.cookie("/register", "error", Util.urlEncodeString("Enter a username, password, name, and account type"), 10, Environment.usingHTTPS());
+            res.redirect("/register", 302);
+            return "";
+        }
+
+        if (!isValidUsername(username)) {
+            res.cookie("/register", "error", Util.urlEncodeString("Your username must be between 4 and 32 characters consisting only of letters, numbers, and underscores."), 10, Environment.usingHTTPS());
             res.redirect("/register", 302);
             return "";
         }
@@ -112,6 +121,11 @@ public class AuthenticationManager {
         res.cookie("/", authCookie, jwt, (int) tokenLife.toSeconds(), Environment.usingHTTPS(), true);
         res.redirect("/home", 302);
         return "";
+    }
+
+    private static boolean isValidUsername(String username) {
+        Matcher m = usernamePattern.matcher(username);
+        return m.matches();
     }
 
     private static String issueJWT(User u) {
