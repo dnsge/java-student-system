@@ -1,0 +1,37 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "$BIND_PORT:8080"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    restart: unless-stopped
+    user: "$USER_ID"
+    networks:
+      - app-network
+
+  db:
+    image: "mysql:8.0"
+    volumes:
+      - "./data:/var/lib/mysql"
+      - "./init_db:/docker-entrypoint-initdb.d:ro"
+    expose:
+      - "3306"
+    env_file:
+      - .env
+    environment:
+      - "MYSQL_DATABASE=studentsystem"
+      - "MYSQL_RANDOM_ROOT_PASSWORD=yes"
+    restart: unless-stopped
+    user: "$USER_ID"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
