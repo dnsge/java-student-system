@@ -33,10 +33,7 @@ public class GradeController {
                 return "Invalid JSON\n" + e.toString();
             }
 
-            if (points < 0) {
-                res.status(HttpStatus.BAD_REQUEST_400);
-                return "Points must be positive";
-            }
+            ModelValidator.validateGrade(points);
 
             QueryManager qm = QueryManager.getQueryManager();
             try {

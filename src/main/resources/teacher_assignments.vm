@@ -41,11 +41,11 @@
         event.preventDefault();
         $.ajax("/api/assignments/" + assignmentId, {
             method: "DELETE",
-            success: function (data) {
+            success: function () {
                 location.reload();
             },
             error: function (data) {
-                alert("Error: Failed to delete assignment");
+                alert("Error: Failed to delete assignment: " + data.responseText);
                 console.error(data);
             }
         });
@@ -66,11 +66,11 @@
                 'totalPoints': totalPoints,
                 'courseId': courseId
             }),
-            success: function (data) {
+            success: function () {
                 location.reload();
             },
             error: function (data) {
-                alert("Error: Failed to create assignment");
+                alert("Error: Failed to create assignment: " + data.responseText);
                 console.error(data);
             }
         });
@@ -117,11 +117,11 @@
                     'dueDate': dateInput.value,
                     'totalPoints': pointsInput.value
                 }),
-                success: function (data) {
+                success: function () {
                     location.reload();
                 },
                 error: function (data) {
-                    alert("Error: Failed to update assignment. Please reload the page.");
+                    alert("Error: Failed to update assignment: " + data.responseText);
                     console.error(data);
                 }
             });

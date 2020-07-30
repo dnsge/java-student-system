@@ -43,11 +43,11 @@
         event.preventDefault();
         $.ajax("/api/courses/" + courseId, {
             method: "DELETE",
-            success: function (data) {
+            success: function () {
                 location.reload();
             },
             error: function (data) {
-                alert("Error: Failed to delete course");
+                alert("Error: Failed to delete course: " + data.responseText);
                 console.error(data);
             }
         });
@@ -64,7 +64,7 @@
                 'name': name,
                 'room': room,
             }),
-            success: function (data) {
+            success: function () {
                 location.reload();
             },
             error: function (data) {

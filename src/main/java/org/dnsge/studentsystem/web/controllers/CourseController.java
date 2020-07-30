@@ -29,6 +29,8 @@ public class CourseController {
                 return "Invalid JSON\n" + e.toString();
             }
 
+            ModelValidator.validateCourse(name, room);
+
             if (u.getType() != 't') {
                 res.status(HttpStatus.FORBIDDEN_403);
                 return "";

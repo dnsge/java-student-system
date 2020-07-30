@@ -1,6 +1,7 @@
 package org.dnsge.studentsystem.web.controllers;
 
 import org.dnsge.studentsystem.Environment;
+import org.dnsge.studentsystem.ex.ValidationException;
 import org.dnsge.studentsystem.sql.QueryManager;
 import org.dnsge.studentsystem.sql.model.Assignment;
 import org.dnsge.studentsystem.sql.model.Course;
@@ -31,7 +32,7 @@ public class AssignmentController {
                 String reqBody = req.body();
                 JSONObject body = new JSONObject(reqBody);
 
-                name = body.getString("name");
+                name = body.getString("name").trim();
                 dueDateString = body.getString("dueDate");
                 totalPoints = body.getInt("totalPoints");
                 courseId = body.getInt("courseId");
@@ -45,15 +46,7 @@ public class AssignmentController {
                 return "Invalid date";
             }
 
-            if (totalPoints < 0) {
-                res.status(HttpStatus.BAD_REQUEST_400);
-                return "Total points must be positive";
-            }
-
-            if (name.length() > 255) {
-                res.status(HttpStatus.BAD_REQUEST_400);
-                return "Name must be 255 characters or lower";
-            }
+            ModelValidator.validateAssignment(name, totalPoints);
 
             QueryManager qm = QueryManager.getQueryManager();
             try {
@@ -94,22 +87,15 @@ public class AssignmentController {
 
                     dueDate = new Date(dateFormat.parse(dueDateString).getTime());
                 } catch (JSONException | NumberFormatException e) {
+                    System.err.println(e.toString());
                     res.status(HttpStatus.BAD_REQUEST_400);
-                    return "Invalid JSON\n" + e.toString();
+                    return "Invalid JSON";
                 } catch (ParseException e) {
                     res.status(HttpStatus.BAD_REQUEST_400);
                     return "Invalid date";
                 }
 
-                if (totalPoints < 0) {
-                    res.status(HttpStatus.BAD_REQUEST_400);
-                    return "Total points must be positive";
-                }
-
-                if (name.length() > 255) {
-                    res.status(HttpStatus.BAD_REQUEST_400);
-                    return "Name must be 255 characters or lower";
-                }
+                ModelValidator.validateAssignment(name, totalPoints);
 
                 QueryManager qm = QueryManager.getQueryManager();
                 try {

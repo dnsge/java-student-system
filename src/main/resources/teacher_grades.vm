@@ -48,11 +48,11 @@
         event.preventDefault();
         $.ajax("/api/grades/" + gradeId, {
             method: "DELETE",
-            success: function (data) {
+            success: function () {
                 location.reload();
             },
             error: function (data) {
-                alert("Error: Failed to delete grade");
+                alert("Error: Failed to delete grade: " + data.responseText);
                 console.error(data);
             }
         });

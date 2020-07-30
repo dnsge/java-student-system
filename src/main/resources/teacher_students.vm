@@ -43,11 +43,11 @@
         event.preventDefault();
         $.ajax("/api/enrollments/" + enrollmentId, {
             method: "DELETE",
-            success: function (data) {
+            success: function () {
                 location.reload();
             },
             error: function (data) {
-                alert("Error: Failed to remove student");
+                alert("Error: Failed to remove student: " + data.responseText);
                 console.error(data);
             }
         });
@@ -66,7 +66,7 @@
                 'studentId': studentId,
                 'courseId': courseId
             }),
-            success: function (data) {
+            success: function () {
                 location.reload();
             },
             error: function (data) {
