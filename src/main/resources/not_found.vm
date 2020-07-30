@@ -1,0 +1,36 @@
+#parse("mainLayout.vm")
+#@mainLayout()
+<style>
+    html, body {
+        height: 100%;
+    }
+
+    body {
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        text-align: center;
+        background-color: rgb(240, 240, 240);
+    }
+
+    #content {
+        width: 100%;
+        max-width: 350px;
+        padding: 15px;
+        margin: auto;
+    }
+
+    #box {
+        background-color: white;
+    }
+</style>
+<body>
+<div id="content">
+    <div id="box" class="p-4 border border-secondary rounded">
+        <h1>404 Not Found</h1>
+        <a href="javascript:history.back()">Go back</a>
+    </div>
+</div>
+</body>
+#end
