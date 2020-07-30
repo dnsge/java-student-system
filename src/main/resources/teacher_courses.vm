@@ -19,7 +19,7 @@
 
     #content {
         width: 100%;
-        max-width: 800px;
+        max-width: 900px;
         padding: 15px;
         margin: auto;
     }
@@ -103,10 +103,10 @@
             #end
         <tr>
             <td>
-                <input type="text" id="nameInput" placeholder="Course name">
+                <input type="text" id="nameInput" placeholder="Course name" class="form-control">
             </td>
             <td>
-                <input type="text" id="roomInput" placeholder="Course room">
+                <input type="text" id="roomInput" placeholder="Course room" class="form-control">
             </td>
             <td>
                 <button class="btn btn-success" onclick="createCourse()">Create</button>

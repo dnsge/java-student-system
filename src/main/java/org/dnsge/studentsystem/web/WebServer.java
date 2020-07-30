@@ -208,8 +208,14 @@ public class WebServer {
                         res.status(500);
                         return errorMessage;
                     }
+                    Optional<Collection<Student>> allStudents = qm.getCourseStudents(courseId.get());
+                    if (allStudents.isEmpty()) {
+                        res.status(500);
+                        return errorMessage;
+                    }
                     model.put("enrollments", enrollments.get().toArray());
                     model.put("periods", periods.get().toArray());
+                    model.put("students", allStudents.get().toArray());
                     return renderTemplate(model, "teacher_students.vm");
                 } else {
                     return "Invalid user, please login again";
@@ -234,17 +240,25 @@ public class WebServer {
             QueryManager qm = QueryManager.getQueryManager();
 
             Optional<Assignment> assignment = qm.getAssignment(assignmentId.get());
-            if (assignment.isEmpty())
-                return "Nothing here!";
-
+            if (assignment.isEmpty()) {
+                res.status(500);
+                return errorMessage;
+            }
             Optional<Collection<Grade>> grades = qm.getTeacherAssignmentGrades(assignmentId.get());
-            if (grades.isEmpty())
-                return "Nothing here!";
-
+            if (grades.isEmpty()) {
+                res.status(500);
+                return errorMessage;
+            }
+            Optional<Collection<Student>> allStudents = qm.getCourseStudents(assignment.get().getCourseId());
+            if (allStudents.isEmpty()) {
+                res.status(500);
+                return errorMessage;
+            }
             Map<String, Object> model = new HashMap<>();
             model.put("assignment", assignment.get());
             model.put("average", Grade.calculateAverageGrade(grades.get(), assignment.get()));
             model.put("grades", grades.get().toArray());
+            model.put("students", allStudents.get().toArray());
             model.put("esc", new EscapeTool());
             if (u.getType() == 's') {
                 return "Not implemented";

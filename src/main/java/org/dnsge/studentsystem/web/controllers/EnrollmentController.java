@@ -20,14 +20,13 @@ import java.util.function.Function;
 public class EnrollmentController {
     public static String createEnrollment(Request req, Response res) {
         return ControllerUtil.mustGetUser(req, res, u -> {
-            String username;
-            int periodId, courseId;
+            int periodId, studentId, courseId;
             try {
                 String reqBody = req.body();
                 JSONObject body = new JSONObject(reqBody);
 
-                username = body.getString("username");
                 periodId = body.getInt("periodId");
+                studentId = body.getInt("studentId");
                 courseId = body.getInt("courseId");
             } catch (JSONException | NumberFormatException e) {
                 res.status(HttpStatus.BAD_REQUEST_400);
@@ -36,7 +35,7 @@ public class EnrollmentController {
 
             QueryManager qm = QueryManager.getQueryManager();
             try {
-                Optional<Student> student = qm.getStudent(username);
+                Optional<Student> student = qm.getStudent(studentId);
                 if (student.isEmpty()) {
                     res.status(HttpStatus.BAD_REQUEST_400);
                     return "Student does not exist";
@@ -59,7 +58,7 @@ public class EnrollmentController {
                     return "";
                 }
 
-                qm.createEnrollment(student.get().getId(), course.get().getId(), periodId);
+                qm.createEnrollment(studentId, courseId, periodId);
                 res.status(HttpStatus.CREATED_201);
                 return "";
             } catch (SQLIntegrityConstraintViolationException e) {

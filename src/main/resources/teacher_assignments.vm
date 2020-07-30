@@ -20,9 +20,17 @@
 
     #content {
         width: 100%;
-        max-width: 800px;
+        max-width: 900px;
         padding: 15px;
         margin: auto;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .table th {
+        vertical-align: middle;
     }
 </style>
 <script>
@@ -87,6 +95,10 @@
         let nameInput = newInput("text");
         let pointsInput = newInput("text");
         pointsInput.pattern = "\\d*";
+
+        dateInput.classList.add('form-control');
+        nameInput.classList.add('form-control');
+        pointsInput.classList.add('form-control');
 
         dateInput.value = tr.dataset.date;
         nameInput.value = tr.dataset.name;
@@ -158,13 +170,13 @@
             #end
         <tr>
             <td>
-                <input type="date" id="dueDateInput">
+                <input type="date" id="dueDateInput" class="form-control">
             </td>
             <td>
-                <input type="text" id="nameInput" placeholder="Assignment name">
+                <input type="text" id="nameInput" placeholder="Assignment name" class="form-control">
             </td>
             <td>
-                <input type="text" pattern="\d*" id="totalPointsInput" placeholder="10">
+                <input type="text" pattern="\d*" id="totalPointsInput" placeholder="10" class="form-control">
             </td>
             <td>
                 <button class="btn btn-success" onclick="createAssignment()">Create</button>

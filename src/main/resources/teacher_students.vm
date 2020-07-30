@@ -1,6 +1,7 @@
 #* @vtlvariable name="course" type="org.dnsge.studentsystem.sql.model.Course" *#
 #* @vtlvariable name="enrollments" type="org.dnsge.studentsystem.sql.model.Enrollment[]" *#
 #* @vtlvariable name="periods" type="org.dnsge.studentsystem.sql.model.Period[]" *#
+#* @vtlvariable name="students" type="org.dnsge.studentsystem.sql.model.Student[]" *#
 
 #parse("mainLayout.vm")
 #@mainLayout()
@@ -21,9 +22,17 @@
 
     #content {
         width: 100%;
-        max-width: 800px;
+        max-width: 900px;
         padding: 15px;
         margin: auto;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .table th {
+        vertical-align: middle;
     }
 </style>
 <script>
@@ -47,14 +56,14 @@
     function enrollStudent() {
         event.preventDefault();
         let periodId = $("#periodInput").val();
-        let name = $("#nameInput").val();
+        let studentId = $("#studentInput").val();
         let courseId = $("#enrollmentTable").data().courseid;
         $.ajax("/api/enrollments/", {
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({
                 'periodId': periodId,
-                'username': name,
+                'studentId': studentId,
                 'courseId': courseId
             }),
             success: function (data) {
@@ -95,14 +104,18 @@
             #end
         <tr>
             <td>
-                <select id="periodInput">
+                <select id="periodInput" class="selectpicker" title="Select period">
                     #foreach($period in $periods)
                         <option value="$period.getId()">$period.getDisplay()</option>
                     #end
                 </select>
             </td>
             <td>
-                <input type="text" id="nameInput" placeholder="Student username">
+                <select id="studentInput" class="selectpicker" data-live-search="true" title="Select student">
+                    #foreach($student in $students)
+                        <option value="$student.getId()">$student.getFirstName() $student.getLastName()</option>
+                    #end
+                </select>
             </td>
             <td>
                 <button class="btn btn-success" onclick="enrollStudent()">Enroll</button>

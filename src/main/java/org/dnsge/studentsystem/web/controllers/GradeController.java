@@ -20,16 +20,14 @@ public class GradeController {
 
     public static String createGrade(Request req, Response res) {
         return ControllerUtil.mustGetUser(req, res, u -> {
-            String username;
-            int points, assignmentId;
+            int studentId, points, assignmentId;
             try {
                 String reqBody = req.body();
                 JSONObject body = new JSONObject(reqBody);
 
-                username = body.getString("username");
+                studentId = body.getInt("studentId");
                 points = body.getInt("points");
                 assignmentId = body.getInt("assignmentId");
-
             } catch (JSONException | NumberFormatException e) {
                 res.status(HttpStatus.BAD_REQUEST_400);
                 return "Invalid JSON\n" + e.toString();
@@ -42,7 +40,7 @@ public class GradeController {
 
             QueryManager qm = QueryManager.getQueryManager();
             try {
-                Optional<Student> student = qm.getStudent(username);
+                Optional<Student> student = qm.getStudent(studentId);
                 if (student.isEmpty()) {
                     res.status(HttpStatus.BAD_REQUEST_400);
                     return "Student does not exist";
@@ -59,7 +57,7 @@ public class GradeController {
                     return "";
                 }
 
-                qm.createGrade(student.get().getId(), assignment.get().getId(), points);
+                qm.createGrade(studentId, assignmentId, points);
                 res.status(HttpStatus.CREATED_201);
                 return "";
             } catch (SQLIntegrityConstraintViolationException e) {

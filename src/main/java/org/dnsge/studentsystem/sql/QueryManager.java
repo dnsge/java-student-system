@@ -9,16 +9,22 @@ import java.util.*;
 
 public class QueryManager {
 
-    public static final String getStudentByUsernameStatement =
+    public static final String getStudentStatement =
             "SELECT u.id, s.first_name, s.last_name " +
                     "FROM students s " +
                     "JOIN users u on s.id = u.id " +
-                    "WHERE u.username = ?";
+                    "WHERE u.id = ?";
     public static final String createGradeStatement =
             "INSERT INTO grades(student_id, assignment_id, points) " +
                     "VALUES(?, ?, ?)";
     private static final String createUserStatement =
             "INSERT INTO users(username, password, type) " +
+                    "VALUES(?, ?, ?)";
+    private static final String createStudentStatement =
+            "INSERT INTO students(id, first_name, last_name) " +
+                    "VALUES(?, ?, ?)";
+    private static final String createTeacherStatement =
+            "INSERT INTO teachers(id, first_name, last_name) " +
                     "VALUES(?, ?, ?)";
     private static final String loginUserStatement =
             "SELECT id, username, password, type " +
@@ -103,6 +109,30 @@ public class QueryManager {
             "SELECT p.id, p.display, p.start_time " +
                     "FROM periods p " +
                     "ORDER BY p.start_time ASC";
+    private static final String getPeriodStatement =
+            "SELECT p.id, p.display, p.start_time " +
+                    "FROM periods p " +
+                    "WHERE p.id = ?";
+    private static final String createEnrollmentStatement =
+            "INSERT INTO enrollments(student_id, course_id, period_id) " +
+                    "VALUES(?, ?, ?)";
+    private static final String getEnrollmentStatement =
+            "SELECT e.student_id, e.course_id, e.period_id, t.id " +
+                    "FROM enrollments e " +
+                    "JOIN courses c on e.course_id = c.id " +
+                    "JOIN teachers t on c.teacher_id = t.id " +
+                    "WHERE e.id = ?";
+    private static final String deleteEnrollmentStatement =
+            "DELETE FROM enrollments e " +
+                    "WHERE e.id = ?";
+    private static final String createCourseStatement =
+            "INSERT INTO courses(name, room, teacher_id) " +
+                    "VALUES (?, ?, ?)";
+    private static final String getCourseStudentsStatement =
+            "SELECT s.id, s.first_name, s.last_name " +
+                    "FROM enrollments e " +
+                    "JOIN students s on e.student_id = s.id " +
+                    "WHERE e.course_id = ?";
 
     private static final Calendar cal = Calendar.getInstance();
     private final Connection connection;
@@ -163,7 +193,7 @@ public class QueryManager {
     }
 
     public void createStudent(int studentId, String firstName, String lastName) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement("INSERT INTO students(id, first_name, last_name) VALUES(?, ?, ?)");
+        PreparedStatement ps = this.connection.prepareStatement(createStudentStatement);
         ps.setInt(1, studentId);
         ps.setString(2, firstName);
         ps.setString(3, lastName);
@@ -171,7 +201,7 @@ public class QueryManager {
     }
 
     public void createTeacher(int teacherId, String firstName, String lastName) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement("INSERT INTO teachers(id, first_name, last_name) VALUES(?, ?, ?)");
+        PreparedStatement ps = this.connection.prepareStatement(createTeacherStatement);
         ps.setInt(1, teacherId);
         ps.setString(2, firstName);
         ps.setString(3, lastName);
@@ -319,9 +349,9 @@ public class QueryManager {
         ps.execute();
     }
 
-    public Optional<Student> getStudent(String username) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement(getStudentByUsernameStatement);
-        ps.setString(1, username);
+    public Optional<Student> getStudent(int studentId) throws SQLException {
+        PreparedStatement ps = this.connection.prepareStatement(getStudentStatement);
+        ps.setInt(1, studentId);
         return collectResult(ps.executeQuery(), rs -> new Student(rs.getInt(1), rs.getString(2), rs.getString(3)));
     }
 
@@ -344,13 +374,13 @@ public class QueryManager {
     }
 
     public Optional<Period> getPeriod(int periodId) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement("SELECT p.id, p.display, p.start_time FROM periods p WHERE p.id = ?");
+        PreparedStatement ps = this.connection.prepareStatement(getPeriodStatement);
         ps.setInt(1, periodId);
         return collectResult(ps.executeQuery(), rs -> new Period(rs.getInt(1), rs.getString(2), rs.getTime(3)));
     }
 
     public void createEnrollment(int studentId, int courseId, int periodId) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement("INSERT INTO enrollments(student_id, course_id, period_id) VALUES(?, ?, ?)");
+        PreparedStatement ps = this.connection.prepareStatement(createEnrollmentStatement);
         ps.setInt(1, studentId);
         ps.setInt(2, courseId);
         ps.setInt(3, periodId);
@@ -358,7 +388,7 @@ public class QueryManager {
     }
 
     public Optional<Enrollment> getEnrollment(int enrollmentId) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement("SELECT e.student_id, e.course_id, e.period_id, t.id FROM enrollments e JOIN courses c on e.course_id = c.id JOIN teachers t on c.teacher_id = t.id WHERE e.id = ?");
+        PreparedStatement ps = this.connection.prepareStatement(getEnrollmentStatement);
         ps.setInt(1, enrollmentId);
         return collectResult(ps.executeQuery(), rs -> {
             Enrollment e = new Enrollment(enrollmentId, rs.getInt(1), rs.getInt(2), rs.getInt(3));
@@ -369,13 +399,13 @@ public class QueryManager {
     }
 
     public void deleteEnrollment(int enrollmentId) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement("DELETE FROM enrollments e WHERE e.id = ?");
+        PreparedStatement ps = this.connection.prepareStatement(deleteEnrollmentStatement);
         ps.setInt(1, enrollmentId);
         ps.execute();
     }
 
     public void createCourse(String name, String room, int teacherId) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement("INSERT INTO courses(name, room, teacher_id) VALUES (?, ?, ?)");
+        PreparedStatement ps = this.connection.prepareStatement(createCourseStatement);
         ps.setString(1, name);
         ps.setString(2, room);
         ps.setInt(3, teacherId);
@@ -386,6 +416,12 @@ public class QueryManager {
         PreparedStatement ps = this.connection.prepareStatement("DELETE FROM courses c WHERE c.id = ?");
         ps.setInt(1, courseId);
         ps.execute();
+    }
+
+    public Optional<Collection<Student>> getCourseStudents(int courseId) throws SQLException {
+        PreparedStatement ps = this.connection.prepareStatement(getCourseStudentsStatement);
+        ps.setInt(1, courseId);
+        return collectResults(ps.executeQuery(), rs -> new Student(rs.getInt(1), rs.getString(2), rs.getString(3)));
     }
 
     @FunctionalInterface
