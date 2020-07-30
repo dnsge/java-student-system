@@ -1,4 +1,4 @@
-package org.dnsge.studentsystem;
+package org.dnsge.studentsystem.ex;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException() {

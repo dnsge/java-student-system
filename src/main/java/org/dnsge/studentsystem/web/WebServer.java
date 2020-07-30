@@ -1,9 +1,9 @@
 package org.dnsge.studentsystem.web;
 
 import org.apache.velocity.tools.generic.EscapeTool;
-import org.dnsge.studentsystem.BadRequestException;
-import org.dnsge.studentsystem.NotAuthenticatedException;
-import org.dnsge.studentsystem.NotFoundException;
+import org.dnsge.studentsystem.ex.BadRequestException;
+import org.dnsge.studentsystem.ex.NotAuthenticatedException;
+import org.dnsge.studentsystem.ex.NotFoundException;
 import org.dnsge.studentsystem.Util;
 import org.dnsge.studentsystem.sql.QueryManager;
 import org.dnsge.studentsystem.sql.model.*;
