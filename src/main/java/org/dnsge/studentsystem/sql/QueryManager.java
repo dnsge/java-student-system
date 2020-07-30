@@ -133,6 +133,11 @@ public class QueryManager {
                     "FROM enrollments e " +
                     "JOIN students s on e.student_id = s.id " +
                     "WHERE e.course_id = ?";
+    private static final String getNotEnrolledStudentsStatement =
+            "SELECT s.id, s.first_name, s.last_name " +
+                    "FROM students s " +
+                    "WHERE s.id NOT IN " +
+                    "(SELECT e.student_id FROM enrollments e WHERE e.course_id = ?)";
 
     private static final Calendar cal = Calendar.getInstance();
     private final Connection connection;
@@ -420,6 +425,12 @@ public class QueryManager {
 
     public Optional<Collection<Student>> getCourseStudents(int courseId) throws SQLException {
         PreparedStatement ps = this.connection.prepareStatement(getCourseStudentsStatement);
+        ps.setInt(1, courseId);
+        return collectResults(ps.executeQuery(), rs -> new Student(rs.getInt(1), rs.getString(2), rs.getString(3)));
+    }
+
+    public Optional<Collection<Student>> getStudentsNotEnrolledInCourse(int courseId) throws SQLException {
+        PreparedStatement ps = this.connection.prepareStatement(getNotEnrolledStudentsStatement);
         ps.setInt(1, courseId);
         return collectResults(ps.executeQuery(), rs -> new Student(rs.getInt(1), rs.getString(2), rs.getString(3)));
     }
