@@ -48,10 +48,12 @@ public class WebServer {
     }
 
     private void setRoutes() {
+        Spark.after((req, res) -> {
+            res.header("Vary", "Cookie");
+        });
+
         Spark.redirect.get("/", "/home");
         Spark.get("/login", (req, res) -> {
-            res.header("Vary", "Cookie");
-
             Optional<User> authUser = AuthenticationManager.getAuthenticatedUser(req);
             if (authUser.isPresent()) {
                 res.redirect("/home", 302);
@@ -68,8 +70,6 @@ public class WebServer {
         });
 
         Spark.get("/register", (req, res) -> {
-            res.header("Vary", "Cookie");
-
             Optional<User> authUser = AuthenticationManager.getAuthenticatedUser(req);
             if (authUser.isPresent()) {
                 res.redirect("/home", 302);
@@ -86,8 +86,6 @@ public class WebServer {
         });
 
         Spark.get("/home", (req, res) -> {
-            res.header("Vary", "Cookie");
-
             Optional<User> authUser = AuthenticationManager.getAuthenticatedUser(req);
             if (authUser.isEmpty()) {
                 res.redirect("/login", 302);
@@ -125,8 +123,6 @@ public class WebServer {
 
         Spark.path("/courses/:courseId", () -> {
             Spark.get("/assignments", (req, res) -> {
-                res.header("Vary", "Cookie");
-
                 Optional<Integer> courseId = parseParamInt(req, ":courseId");
                 if (courseId.isEmpty())
                     return "Invalid course id";
@@ -170,8 +166,6 @@ public class WebServer {
                 }
             });
             Spark.get("/students", (req, res) -> {
-                res.header("Vary", "Cookie");
-
                 Optional<Integer> courseId = parseParamInt(req, ":courseId");
                 if (courseId.isEmpty())
                     return "Invalid course id";
@@ -224,8 +218,6 @@ public class WebServer {
         });
 
         Spark.get("/assignments/:assignmentId/grades", (req, res) -> {
-            res.header("Vary", "Cookie");
-
             Optional<Integer> assignmentId = parseParamInt(req, ":assignmentId");
             if (assignmentId.isEmpty())
                 return "Invalid assignment id";
