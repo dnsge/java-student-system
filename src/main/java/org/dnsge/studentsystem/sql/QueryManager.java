@@ -104,11 +104,11 @@ public class QueryManager {
                     "JOIN students s on e.student_id = s.id " +
                     "JOIN periods p on e.period_id = p.id " +
                     "WHERE e.course_id = ? " +
-                    "ORDER BY p.start_time ASC";
+                    "ORDER BY p.start_time";
     private static final String getPeriodsStatement =
             "SELECT p.id, p.display, p.start_time " +
                     "FROM periods p " +
-                    "ORDER BY p.start_time ASC";
+                    "ORDER BY p.start_time";
     private static final String getPeriodStatement =
             "SELECT p.id, p.display, p.start_time " +
                     "FROM periods p " +
@@ -128,6 +128,9 @@ public class QueryManager {
     private static final String createCourseStatement =
             "INSERT INTO courses(name, room, teacher_id) " +
                     "VALUES (?, ?, ?)";
+    private static final String deleteCourseStatement =
+            "DELETE FROM courses c " +
+                    "WHERE c.id = ?";
     private static final String getCourseStudentsStatement =
             "SELECT s.id, s.first_name, s.last_name " +
                     "FROM enrollments e " +
@@ -138,6 +141,11 @@ public class QueryManager {
                     "FROM students s " +
                     "WHERE s.id NOT IN " +
                     "(SELECT e.student_id FROM enrollments e WHERE e.course_id = ?)";
+    private static final String getStudentsWithoutAssignmentGradeStatement =
+            "SELECT s.id, s.first_name, s.last_name " +
+                    "FROM students s " +
+                    "WHERE s.id NOT IN (SELECT g.student_id FROM grades g WHERE g.assignment_id = ?) " +
+                    "AND s.id IN (SELECT e.student_id FROM enrollments e WHERE e.course_id = ?)";
 
     private static final Calendar cal = Calendar.getInstance();
     private final Connection connection;
@@ -418,7 +426,7 @@ public class QueryManager {
     }
 
     public void deleteCourse(int courseId) throws SQLException {
-        PreparedStatement ps = this.connection.prepareStatement("DELETE FROM courses c WHERE c.id = ?");
+        PreparedStatement ps = this.connection.prepareStatement(deleteCourseStatement);
         ps.setInt(1, courseId);
         ps.execute();
     }
@@ -432,6 +440,13 @@ public class QueryManager {
     public Optional<Collection<Student>> getStudentsNotEnrolledInCourse(int courseId) throws SQLException {
         PreparedStatement ps = this.connection.prepareStatement(getNotEnrolledStudentsStatement);
         ps.setInt(1, courseId);
+        return collectResults(ps.executeQuery(), rs -> new Student(rs.getInt(1), rs.getString(2), rs.getString(3)));
+    }
+
+    public Optional<Collection<Student>> getStudentsWithoutAssignmentGrade(int courseId, int assignmentId) throws SQLException {
+        PreparedStatement ps = this.connection.prepareStatement(getStudentsWithoutAssignmentGradeStatement);
+        ps.setInt(1, assignmentId);
+        ps.setInt(2, courseId);
         return collectResults(ps.executeQuery(), rs -> new Student(rs.getInt(1), rs.getString(2), rs.getString(3)));
     }
 

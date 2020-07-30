@@ -249,7 +249,7 @@ public class WebServer {
                 res.status(500);
                 return errorMessage;
             }
-            Optional<Collection<Student>> allStudents = qm.getCourseStudents(assignment.get().getCourseId());
+            Optional<Collection<Student>> allStudents = qm.getStudentsWithoutAssignmentGrade(assignment.get().getCourseId(), assignmentId.get());
             if (allStudents.isEmpty()) {
                 res.status(500);
                 return errorMessage;
