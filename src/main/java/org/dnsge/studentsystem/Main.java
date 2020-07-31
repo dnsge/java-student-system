@@ -11,7 +11,7 @@ import java.sql.Statement;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        MySQLConnector connector = MySQLConnector.getInstance();
+        MySQLConnector connector = MySQLConnector.init(Environment.mySqlUri(), Environment.mySqlUser(), Environment.mySqlPassword());
 
         int tries = 0;
         int waitTime = 1000;
@@ -20,7 +20,7 @@ public class Main {
         while (tries < 6) {
             System.out.print(".");
             try {
-                Connection c = connector.connect(Environment.mySqlUri(), Environment.mySqlUser(), Environment.mySqlPassword());
+                connector.connect();
                 Statement statement = connector.newStatement();
                 ResultSet rs = statement.executeQuery("SELECT VERSION()");
                 if (rs.next()) {

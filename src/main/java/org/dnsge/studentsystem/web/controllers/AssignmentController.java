@@ -48,8 +48,8 @@ public class AssignmentController {
 
             ModelValidator.validateAssignment(name, totalPoints);
 
-            QueryManager qm = QueryManager.getQueryManager();
             try {
+                QueryManager qm = QueryManager.getQueryManager();
                 Optional<Course> course = qm.getCourse(courseId);
                 if (course.isEmpty()) {
                     res.status(HttpStatus.BAD_REQUEST_400);
@@ -97,8 +97,8 @@ public class AssignmentController {
 
                 ModelValidator.validateAssignment(name, totalPoints);
 
-                QueryManager qm = QueryManager.getQueryManager();
                 try {
+                    QueryManager qm = QueryManager.getQueryManager();
                     Optional<Course> course = qm.getCourseFromAssignment(assignmentId);
                     if (course.isEmpty()) {
                         res.status(HttpStatus.BAD_REQUEST_400);
@@ -124,8 +124,8 @@ public class AssignmentController {
     public static String deleteAssignment(Request req, Response res) {
         return assignmentIdParam(req, res, assignmentId -> {
             return ControllerUtil.mustGetUser(req, res, u -> {
-                QueryManager qm = QueryManager.getQueryManager();
                 try {
+                    QueryManager qm = QueryManager.getQueryManager();
                     Optional<Assignment> assignment = qm.getAssignment(assignmentId);
                     if (assignment.isEmpty()) {
                         res.status(HttpStatus.NOT_FOUND_404);

@@ -10,18 +10,34 @@ public class MySQLConnector {
 
     private static MySQLConnector instance;
 
+    private String url, user, pass;
     private Connection connection;
 
-    private MySQLConnector() {
-
+    private MySQLConnector(String url, String user, String pass) {
+        this.url = url;
+        this.user = user;
+        this.pass = pass;
     }
 
-    public Connection connect(String url, String user, String pass) throws SQLException {
+    public Connection connect() throws SQLException {
         connection = DriverManager.getConnection(url, user, pass);
         return connection;
     }
 
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
+        // Check if connection is still open & valid
+        boolean valid;
+        try {
+            valid = this.connection.isValid(1);
+        } catch (SQLException e) {
+            valid = false;
+        }
+
+        // Reconnect if not valid
+        if (!valid) {
+            return this.connect();
+        }
+
         return this.connection;
     }
 
@@ -34,11 +50,17 @@ public class MySQLConnector {
 
     public static MySQLConnector getInstance() {
         if (instance == null) {
-            instance = new MySQLConnector();
+            throw new IllegalStateException("MySQLConnector is not initialized");
         }
 
         return instance;
     }
 
+    public static MySQLConnector init(String url, String user, String pass) {
+        if (instance != null)
+            throw new IllegalStateException("MySQLConnector is already initialized");
+        instance = new MySQLConnector(url, user, pass);
+        return instance;
+    }
 
 }

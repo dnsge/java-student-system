@@ -33,8 +33,8 @@ public class EnrollmentController {
                 return "Invalid JSON\n" + e.toString();
             }
 
-            QueryManager qm = QueryManager.getQueryManager();
             try {
+                QueryManager qm = QueryManager.getQueryManager();
                 Optional<Student> student = qm.getStudent(studentId);
                 if (student.isEmpty()) {
                     res.status(HttpStatus.BAD_REQUEST_400);
@@ -74,8 +74,8 @@ public class EnrollmentController {
     public static String deleteEnrollment(Request req, Response res) {
         return enrollmentIdParam(req, res, enrollmentId -> {
             return ControllerUtil.mustGetUser(req, res, u -> {
-                QueryManager qm = QueryManager.getQueryManager();
                 try {
+                    QueryManager qm = QueryManager.getQueryManager();
                     Optional<Enrollment> enrollment = qm.getEnrollment(enrollmentId);
                     if (enrollment.isEmpty()) {
                         res.status(HttpStatus.NOT_FOUND_404);

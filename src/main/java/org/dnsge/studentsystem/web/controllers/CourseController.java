@@ -36,8 +36,8 @@ public class CourseController {
                 return "";
             }
 
-            QueryManager qm = QueryManager.getQueryManager();
             try {
+                QueryManager qm = QueryManager.getQueryManager();
                 qm.createCourse(name, room, u.getId());
                 res.status(HttpStatus.CREATED_201);
                 return "";
@@ -51,8 +51,8 @@ public class CourseController {
     public static String deleteCourse(Request req, Response res) {
         return courseIdParam(req, res, courseId -> {
             return ControllerUtil.mustGetUser(req, res, u -> {
-                QueryManager qm = QueryManager.getQueryManager();
                 try {
+                    QueryManager qm = QueryManager.getQueryManager();
                     Optional<Course> course = qm.getCourse(courseId);
                     if (course.isEmpty()) {
                         res.status(HttpStatus.NOT_FOUND_404);

@@ -37,9 +37,9 @@ public class AuthenticationManager {
             return "";
         }
 
-        QueryManager qm = QueryManager.getQueryManager();
         User user;
         try {
+            QueryManager qm = QueryManager.getQueryManager();
             Optional<User> u = qm.loginUser(username, password);
             if (u.isEmpty()) {
                 res.cookie("/login", "error", Util.urlEncodeString("Invalid username or password"), 10, Environment.usingHTTPS());
@@ -95,9 +95,9 @@ public class AuthenticationManager {
             return "";
         }
 
-        QueryManager qm = QueryManager.getQueryManager();
         User u;
         try {
+            QueryManager qm = QueryManager.getQueryManager();
             u = qm.createUser(username, password, type.equals("student") ? 's' : 't');
             if (type.equals("student")) {
                 qm.createStudent(u.getId(), firstName, lastName);

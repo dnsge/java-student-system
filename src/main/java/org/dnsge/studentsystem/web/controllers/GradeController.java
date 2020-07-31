@@ -35,8 +35,8 @@ public class GradeController {
 
             ModelValidator.validateGrade(points);
 
-            QueryManager qm = QueryManager.getQueryManager();
             try {
+                QueryManager qm = QueryManager.getQueryManager();
                 Optional<Student> student = qm.getStudent(studentId);
                 if (student.isEmpty()) {
                     res.status(HttpStatus.BAD_REQUEST_400);
@@ -70,8 +70,8 @@ public class GradeController {
     public static String deleteGrade(Request req, Response res) {
         return gradeIdParam(req, res, gradeId -> {
             return ControllerUtil.mustGetUser(req, res, u -> {
-                QueryManager qm = QueryManager.getQueryManager();
                 try {
+                    QueryManager qm = QueryManager.getQueryManager();
                     Optional<Grade> grade = qm.getGrade(gradeId);
                     if (grade.isEmpty()) {
                         res.status(HttpStatus.NOT_FOUND_404);

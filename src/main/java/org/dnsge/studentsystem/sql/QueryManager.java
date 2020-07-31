@@ -157,7 +157,7 @@ public class QueryManager {
         this.connection = connection;
     }
 
-    public static QueryManager getQueryManager() {
+    public static QueryManager getQueryManager() throws SQLException {
         return new QueryManager(MySQLConnector.getInstance().getConnection());
     }
 
