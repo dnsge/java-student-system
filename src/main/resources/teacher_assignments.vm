@@ -53,17 +53,33 @@
 
     function createAssignment() {
         event.preventDefault();
-        let name = $("#nameInput").val();
-        let date = $("#dueDateInput").val();
-        let totalPoints = $("#totalPointsInput").val();
+        let name = $("#nameInput");
+        let date = $("#dueDateInput");
+        let totalPoints = $("#totalPointsInput");
+
+        if (!date[0].checkValidity()) {
+            alert('Enter a valid due date');
+            return;
+        }
+
+        if (!name[0].checkValidity()) {
+            alert('Enter a valid assignment name');
+            return;
+        }
+
+        if (!totalPoints[0].checkValidity()) {
+            alert('Enter a valid total point amount');
+            return;
+        }
+
         let courseId = $("#assignmentTable").data().courseid;
         $.ajax("/api/assignments/", {
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({
-                'name': name,
-                'dueDate': date,
-                'totalPoints': totalPoints,
+                'name': name.val(),
+                'dueDate': date.val(),
+                'totalPoints': totalPoints.val(),
                 'courseId': courseId
             }),
             success: function () {
@@ -94,11 +110,15 @@
         let dateInput = newInput("date");
         let nameInput = newInput("text");
         let pointsInput = newInput("text");
-        pointsInput.pattern = "\\d*";
 
         dateInput.classList.add('form-control');
         nameInput.classList.add('form-control');
         pointsInput.classList.add('form-control');
+
+        dateInput.required = true;
+        nameInput.required = true;
+        pointsInput.required = true;
+        pointsInput.pattern = "\\d*";
 
         dateInput.value = tr.dataset.date;
         nameInput.value = tr.dataset.name;
@@ -109,6 +129,21 @@
         submitButton.classList.add("btn", "btn-success");
         submitButton.textContent = "Update";
         submitButton.onclick = function () {
+            if (!dateInput.checkValidity()) {
+                alert('Enter a valid due date');
+                return;
+            }
+
+            if (!nameInput.checkValidity()) {
+                alert('Enter a valid assignment name');
+                return;
+            }
+
+            if (!pointsInput.checkValidity()) {
+                alert('Enter a valid total point amount');
+                return;
+            }
+
             $.ajax("/api/assignments/" + assignmentId, {
                 method: "PUT",
                 contentType: "application/json",
@@ -170,20 +205,22 @@
             #end
         <tr>
             <td>
-                <input type="date" id="dueDateInput" class="form-control">
+                <input type="date" id="dueDateInput" class="form-control" required>
+                <label for="dueDateInput" class="sr-only">Due Date</label>
             </td>
             <td>
-                <input type="text" id="nameInput" placeholder="Assignment name" class="form-control">
+                <input type="text" id="nameInput" placeholder="Assignment name" class="form-control" required>
+                <label for="nameInput" class="sr-only">Assignment Name</label>
             </td>
             <td>
-                <input type="text" pattern="\d*" id="totalPointsInput" placeholder="10" class="form-control">
+                <input type="text" pattern="\d*" id="totalPointsInput" placeholder="10" class="form-control" required>
+                <label for="totalPointsInput" class="sr-only">Total Points</label>
             </td>
             <td>
                 <button class="btn btn-success" onclick="createAssignment()">Create</button>
             </td>
         </tr>
         </tbody>
-
     </table>
 </div>
 </div>

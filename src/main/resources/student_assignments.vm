@@ -49,6 +49,11 @@
         </tr>
         </thead>
         <tbody>
+            #if( $assignments.size() == 0 )
+            <tr>
+                <td colspan="5"><p class="text-center m-0">No grades</p></td>
+            </tr>
+            #end
             #foreach($assignment in $assignments)
                 #set( $date = $assignment.getDueDate() )
                 #set( $name = $assignment.getName() )

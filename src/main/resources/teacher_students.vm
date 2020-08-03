@@ -55,15 +55,27 @@
 
     function enrollStudent() {
         event.preventDefault();
-        let periodId = $("#periodInput").val();
-        let studentId = $("#studentInput").val();
+
+        let periodId = $("#periodInput");
+        let studentId = $("#studentInput");
+
+        if (!periodId[0].checkValidity()) {
+            alert('Select a period');
+            return;
+        }
+
+        if (!studentId[0].checkValidity()) {
+            alert('Select a student');
+            return;
+        }
+
         let courseId = $("#enrollmentTable").data().courseid;
         $.ajax("/api/enrollments/", {
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({
-                'periodId': periodId,
-                'studentId': studentId,
+                'periodId': periodId.val(),
+                'studentId': studentId.val(),
                 'courseId': courseId
             }),
             success: function () {
@@ -104,14 +116,14 @@
             #end
         <tr>
             <td>
-                <select id="periodInput" class="selectpicker" title="Select period">
+                <select id="periodInput" class="selectpicker" title="Select period" required>
                     #foreach($period in $periods)
                         <option value="$period.getId()">$period.getDisplay()</option>
                     #end
                 </select>
             </td>
             <td>
-                <select id="studentInput" class="selectpicker" data-live-search="true" title="Select student">
+                <select id="studentInput" class="selectpicker" data-live-search="true" title="Select student" required>
                     #foreach($student in $students)
                         <option value="$student.getId()">$student.getFirstName() $student.getLastName()</option>
                     #end

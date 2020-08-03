@@ -23,6 +23,14 @@
         padding: 15px;
         margin: auto;
     }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .table th {
+        vertical-align: middle;
+    }
 </style>
 <body>
 #header()
@@ -40,6 +48,11 @@
         </tr>
         </thead>
         <tbody>
+            #if( $enrollments.size() == 0 )
+            <tr>
+                <td colspan="5"><p class="text-center m-0">No courses</p></td>
+            </tr>
+            #end
             #foreach($enrollment in $enrollments)
                 #set ($period = $enrollment.getPeriod())
                 #set ($course = $enrollment.getCourse())

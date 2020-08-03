@@ -71,7 +71,7 @@
                 'points': points,
                 'assignmentId': assignmentId
             }),
-            success: function (data) {
+            success: function () {
                 location.reload();
             },
             error: function (data) {
@@ -117,8 +117,9 @@
                 <td></td>
             </tr>
             <tr>
-                <td>
-                </td>
+                <th scope="row">
+                    Grade assignment:
+                </th>
                 <td>
                     <select id="studentInput" class="selectpicker" data-live-search="true" title="Select student">
                         #foreach($student in $students)
@@ -129,6 +130,7 @@
                 <td>
                     <input type="text" pattern="\d*" id="pointsInput" placeholder="$assignment.getTotalPoints()"
                            class="form-control">
+                    <label for="pointsInput" class="sr-only">Points</label>
                     /$assignment.getTotalPoints()
                 </td>
                 <td>

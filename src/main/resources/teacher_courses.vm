@@ -55,14 +55,25 @@
 
     function createCourse() {
         event.preventDefault();
-        let name = $("#nameInput").val();
-        let room = $("#roomInput").val();
+        let name = $("#nameInput");
+        let room = $("#roomInput");
+
+        if (!name[0].checkValidity()) {
+            alert('Enter a valid course name');
+            return;
+        }
+
+        if (!room[0].checkValidity()) {
+            alert('Enter a valid course room');
+            return;
+        }
+
         $.ajax("/api/courses/", {
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({
-                'name': name,
-                'room': room,
+                'name': name.val(),
+                'room': room.val(),
             }),
             success: function () {
                 location.reload();
@@ -103,10 +114,12 @@
             #end
         <tr>
             <td>
-                <input type="text" id="nameInput" placeholder="Course name" class="form-control">
+                <input type="text" id="nameInput" placeholder="Course name" class="form-control" required>
+                <label for="nameInput" class="sr-only">Course Name</label>
             </td>
             <td>
-                <input type="text" id="roomInput" placeholder="Course room" class="form-control">
+                <input type="text" id="roomInput" placeholder="Course room" class="form-control" required>
+                <label for="roomInput" class="sr-only">Course Room</label>
             </td>
             <td>
                 <button class="btn btn-success" onclick="createCourse()">Create</button>
