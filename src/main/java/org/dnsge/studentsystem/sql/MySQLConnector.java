@@ -10,7 +10,7 @@ public class MySQLConnector {
 
     private static MySQLConnector instance;
 
-    private String url, user, pass;
+    private final String url, user, pass;
     private Connection connection;
 
     private MySQLConnector(String url, String user, String pass) {
