@@ -75,10 +75,16 @@
     <input type="text" id="lastNameField" class="form-control mb-3 input-middle" placeholder="Last name"
            name="lastName"
            required autofocus>
-    <label for="typeField" class="sr-only">Type</label>
-    <input type="text" id="typeField" class="form-control mb-3 input-bottom" placeholder="Student/Teacher"
-           name="type"
-           required autofocus>
+    <div class="form-control mb-3 input-bottom">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="type" value="student" id="typeRadio1" required>
+            <label class="form-check-label" for="typeRadio1">Student</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="type" value="teacher" id="typeRadio2" required>
+            <label class="form-check-label" for="typeRadio2">Teacher</label>
+        </div>
+    </div>
     <button class="btn btn-primary btn-block mb-3" type="submit">Register</button>
     <a href="/login">Sign in</a>
 </form>
