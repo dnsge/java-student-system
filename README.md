@@ -25,3 +25,5 @@ Environment variables:
     - User ID to run web server and database as
  - `BIND_PORT` (docker-compose only)
     - Port to bind web server to
+ - `MYSQL_VOLUME` (docker-compose only)
+    - Directory to mount the MySQL database volume to
