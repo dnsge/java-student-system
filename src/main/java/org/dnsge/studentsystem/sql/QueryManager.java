@@ -40,7 +40,8 @@ public class QueryManager {
                     "JOIN courses c on e.course_id = c.id " +
                     "JOIN teachers t on c.teacher_id = t.id " +
                     "JOIN periods p on e.period_id = p.id " +
-                    "WHERE e.student_id=?";
+                    "WHERE e.student_id=? " +
+                    "ORDER BY p.start_time";
     private static final String getAssignmentsStatement =
             "SELECT a.id, a.name, a.total_points, a.due_date " +
                     "FROM assignments a " +
