@@ -27,3 +27,17 @@ Environment variables:
     - Port to bind web server to
  - `MYSQL_VOLUME` (docker-compose only)
     - Directory to mount the MySQL database volume to
+
+## Screenshots
+Login page:
+![Login Page](./screenshots/ss_login.png?raw=true)
+
+Student courses:
+![Courses](./screenshots/ss_courses.png?raw=true)
+
+Student assignments:
+![Assignments](./screenshots/ss_assignments.png?raw=true)
+
+Teacher's perspective:
+![Teacher Perspective](./screenshots/ss_teacher.png?raw=true)
+
